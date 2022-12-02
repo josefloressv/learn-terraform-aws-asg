@@ -1,5 +1,7 @@
+# https://developer.hashicorp.com/terraform/tutorials/aws/aws-asg
+
 provider "aws" {
-  region = "us-east-2"
+  region = "us-east-1"
 
   default_tags {
     tags = {
@@ -35,6 +37,8 @@ data "aws_ami" "amazon-linux" {
   }
 }
 
+# EC2 Launch Configuration
+
 resource "aws_launch_configuration" "terramino" {
   name_prefix     = "learn-terraform-aws-asg-"
   image_id        = data.aws_ami.amazon-linux.id
@@ -46,6 +50,8 @@ resource "aws_launch_configuration" "terramino" {
     create_before_destroy = true
   }
 }
+
+# Auto Scaling Group
 
 resource "aws_autoscaling_group" "terramino" {
   name                 = "terramino"
@@ -61,6 +67,8 @@ resource "aws_autoscaling_group" "terramino" {
     propagate_at_launch = true
   }
 }
+
+# Load balancer resources
 
 resource "aws_lb" "terramino" {
   name               = "learn-asg-terramino-lb"
@@ -93,6 +101,8 @@ resource "aws_autoscaling_attachment" "terramino" {
   autoscaling_group_name = aws_autoscaling_group.terramino.id
   alb_target_group_arn   = aws_lb_target_group.terramino.arn
 }
+
+# Security groups
 
 resource "aws_security_group" "terramino_instance" {
   name = "learn-asg-terramino-instance"
